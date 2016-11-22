@@ -1,0 +1,65 @@
+group = 'com.urbanairship.android'
+version = '1.0.0'
+description = "Urban Airship Gimbal Adapter"
+
+apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.0"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 25
+        consumerProguardFiles 'consumer-proguard.txt'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+}
+
+dependencies {
+    compile 'com.gimbal.android.v2:gimbal-sdk:+'
+    compile 'com.gimbal.android.v2:gimbal-slf4j-impl:+'
+    provided 'com.urbanairship.android:urbanairship-sdk:8.1.0'
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            packaging 'aar'
+            groupId project.group
+            artifactId 'gimbal-adapter'
+
+            name project.name
+            description project.description
+            url 'http://www.urbanairship.com'
+        }
+    }
+}
+
+bintray {
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+
+    configurations = ['archives']
+
+    pkg {
+        userOrg = 'urbanairship'
+        name = project.name
+        desc = project.description
+        websiteUrl = 'http://www.urbanairship.com'
+
+        version {
+            repo = 'android'
+            publish = false
+            desc = project.description
+            name = project.version
+            released = new Date()
+        }
+    }
+}

@@ -1,0 +1,7 @@
+-keep public interface com.gimbal.proguard.Keep {  }
+-keep public class ** implements com.gimbal.proguard.Keep { *; }
+-keep public class **.protocol.** { public protected *; }
+-keepattributes Signature
+
+-keep public class org.codehaus.jackson..** { public protected *; }
+-dontwarn org.codehaus.**,com.fasterxml.**,org.simpleframework.**,com.google.**,org.apache.**
