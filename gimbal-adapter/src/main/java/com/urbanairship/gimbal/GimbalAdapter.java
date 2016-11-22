@@ -23,6 +23,9 @@ import com.urbanairship.location.RegionEvent;
 import com.urbanairship.util.DateUtils;
 import com.urbanairship.util.HelperActivity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * GimbalAdapter interfaces Gimbal SDK functionality with Urban Airship services.
  */
@@ -35,6 +38,42 @@ public class GimbalAdapter {
     private static GimbalAdapter instance;
     private final SharedPreferences preferences;
     private final Context context;
+    private final List<Listener> listeners = new ArrayList<>();
+
+    /**
+     * Permission result callback.
+     */
+    public interface PermissionResultCallback {
+
+        /**
+         * Called with the permission result.
+         *
+         * @param enabled {@link true} if the permissions have been granted, otherwise {@code false}.
+         */
+        void onResult(boolean enabled);
+    }
+
+    /**
+     * Adapter listener.
+     */
+    public interface Listener {
+
+        /**
+         * Called when a Urban Airship Region enter event is created from a Gimbal Visit.
+         *
+         * @param event The Urban Airship event.
+         * @param visit The Gimbal visit.
+         */
+        void onRegionEntered(RegionEvent event, Visit visit);
+
+        /**
+         * Called when a Urban Airship Region exit event is created from a Gimbal Visit.
+         *
+         * @param event The Urban Airship event.
+         * @param visit The Gimbal visit.
+         */
+        void onRegionExited(RegionEvent event, Visit visit);
+    }
 
     /**
      * Boolean representing the started state of the GimbalAdapter.
@@ -56,6 +95,12 @@ public class GimbalAdapter {
                 public void onAirshipReady(UAirship airship) {
                     RegionEvent enter = new RegionEvent(visit.getPlace().getIdentifier(), SOURCE, RegionEvent.BOUNDARY_EVENT_ENTER);
                     airship.getAnalytics().addEvent(enter);
+
+                    synchronized (listeners) {
+                        for (Listener listener : new ArrayList<>(listeners)) {
+                            listener.onRegionEntered(enter, visit);
+                        }
+                    }
                 }
             });
         }
@@ -71,6 +116,12 @@ public class GimbalAdapter {
                 public void onAirshipReady(UAirship airship) {
                     RegionEvent exit = new RegionEvent(visit.getPlace().getIdentifier(), SOURCE, RegionEvent.BOUNDARY_EVENT_EXIT);
                     airship.getAnalytics().addEvent(exit);
+
+                    synchronized (listeners) {
+                        for (Listener listener : new ArrayList<>(listeners)) {
+                            listener.onRegionExited(exit, visit);
+                        }
+                    }
                 }
             });
         }
@@ -110,6 +161,28 @@ public class GimbalAdapter {
             }
         } catch (Exception e) {
             Log.e(TAG, "Failed to restore gimbal adapter: ", e);
+        }
+    }
+
+    /**
+     * Adds an adapter listener.
+     *
+     * @param listener The listener.
+     */
+    public void addListener(Listener listener) {
+        synchronized (listeners) {
+            listeners.add(listener);
+        }
+    }
+
+    /**
+     * Removes an adapter listener.
+     *
+     * @param listener The listener.
+     */
+    public void removeListner(Listener listener) {
+        synchronized (listeners) {
+            listeners.remove(listener);
         }
     }
 
@@ -220,19 +293,6 @@ public class GimbalAdapter {
         }
 
         return false;
-    }
-
-    /**
-     * Permission result callback.
-     */
-    public interface PermissionResultCallback {
-
-        /**
-         * Called with the permission result.
-         *
-         * @param enabled {@link true} if the permissions have been granted, otherwise {@code false}.
-         */
-        void onResult(boolean enabled);
     }
 
     private class RequestPermissionsTask extends AsyncTask<String, Void, Boolean> {
