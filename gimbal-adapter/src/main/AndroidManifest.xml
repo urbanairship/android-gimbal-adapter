@@ -27,7 +27,7 @@
             android:name="com.gimbal.internal.service.GimbalService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.gimbal.android.sample.service.GIMBAL_SERVICE"/>
+                <action android:name="${applicationId}.service.GIMBAL_SERVICE"/>
             </intent-filter>
         </service>
 
