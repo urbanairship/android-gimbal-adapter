@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresPermission;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
@@ -25,6 +26,8 @@ import com.urbanairship.util.HelperActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 /**
  * GimbalAdapter interfaces Gimbal SDK functionality with Urban Airship services.
@@ -155,6 +158,7 @@ public class GimbalAdapter {
     void restore() {
         try {
             if (this.preferences.getBoolean(STARTED_PREFERENCE, false)) {
+                //noinspection MissingPermission
                 start(null);
             } else {
                 stop();
@@ -196,6 +200,7 @@ public class GimbalAdapter {
      * @param gimbalApiKey The Gimbal API key.
      * @return {@code true} if the adapter started, otherwise {@code false}.
      */
+    @RequiresPermission(ACCESS_FINE_LOCATION)
     public boolean start(String gimbalApiKey) {
         if (isStarted) {
             return true;
@@ -245,6 +250,7 @@ public class GimbalAdapter {
             @Override
             public void onResult(boolean enabled) {
                 if (enabled) {
+                    //noinspection MissingPermission
                     start(gimbalApiKey);
                 }
 
@@ -254,7 +260,7 @@ public class GimbalAdapter {
             }
         });
 
-        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, android.Manifest.permission.ACCESS_FINE_LOCATION);
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ACCESS_FINE_LOCATION);
     }
 
     /**
@@ -288,7 +294,7 @@ public class GimbalAdapter {
      * @return {@code true} if permissions have been granted, otherwise {@code false}.
      */
     public boolean isPermissionGranted() {
-        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(context, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             return true;
         }
 
