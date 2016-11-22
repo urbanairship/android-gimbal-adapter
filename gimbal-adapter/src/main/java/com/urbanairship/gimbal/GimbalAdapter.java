@@ -155,7 +155,7 @@ public class GimbalAdapter {
      * @param gimbalApiKey The Gimbal API key.
      */
     public void startWithPermissionPrompt(@NonNull final String gimbalApiKey) {
-       startWithPermissionPrompt(gimbalApiKey, null);
+        startWithPermissionPrompt(gimbalApiKey, null);
     }
 
     /**
