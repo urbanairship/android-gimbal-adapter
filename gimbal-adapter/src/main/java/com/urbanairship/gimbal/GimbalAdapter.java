@@ -36,6 +36,8 @@ public class GimbalAdapter {
     private static final String TAG = "GimbalAdapter";
     private static final String PREFERENCE_NAME = "com.urbanairhsip.gimbal.preferences";
     private static final String STARTED_PREFERENCE = "com.urbanairhsip.gimbal.started";
+    private static final String API_KEY_PREFERENCE = "com.urbanairhsip.gimbal.api_key";
+
     private static final String SOURCE = "Gimbal";
 
     private static GimbalAdapter instance;
@@ -156,10 +158,13 @@ public class GimbalAdapter {
      * it will stop listening. Should be called when the application starts up.
      */
     void restore() {
+        boolean started = preferences.getBoolean(STARTED_PREFERENCE, false);
+        String apiKey = preferences.getString(API_KEY_PREFERENCE, null);
+
         try {
-            if (this.preferences.getBoolean(STARTED_PREFERENCE, false)) {
+            if (apiKey != null && started) {
                 //noinspection MissingPermission
-                start(null);
+                start(apiKey);
             } else {
                 stop();
             }
@@ -201,14 +206,12 @@ public class GimbalAdapter {
      * @return {@code true} if the adapter started, otherwise {@code false}.
      */
     @RequiresPermission(ACCESS_FINE_LOCATION)
-    public boolean start(String gimbalApiKey) {
+    public boolean start(@NonNull String gimbalApiKey) {
         if (isStarted) {
             return true;
         }
 
-        if (gimbalApiKey != null) {
-            Gimbal.setApiKey((Application) context.getApplicationContext(), gimbalApiKey);
-        }
+        Gimbal.setApiKey((Application) context.getApplicationContext(), gimbalApiKey);
 
         if (!isPermissionGranted()) {
             Log.e(TAG, "Unable to start adapter, permission denied.");
@@ -216,7 +219,10 @@ public class GimbalAdapter {
         }
 
         isStarted = true;
-        preferences.edit().putBoolean(STARTED_PREFERENCE, true).apply();
+        preferences.edit()
+                .putString(API_KEY_PREFERENCE, gimbalApiKey)
+                .putBoolean(STARTED_PREFERENCE, true)
+                .apply();
 
         PlaceManager.getInstance().addListener(placeEventListener);
         PlaceManager.getInstance().startMonitoring();
