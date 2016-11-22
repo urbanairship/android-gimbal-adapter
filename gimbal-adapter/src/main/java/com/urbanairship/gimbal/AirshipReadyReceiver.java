@@ -16,14 +16,5 @@ public class AirshipReadyReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         GimbalAdapter.shared(context).restore();
-
-        GimbalAdapter.shared(context).startWithPermissionPrompt("", new GimbalAdapter.PermissionResultCallback() {
-            @Override
-            public void onResult(boolean enabled) {
-                if (enabled) {
-                    // permission granted and adapter started
-                }
-            }
-        });
     }
 }
