@@ -34,9 +34,9 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
  */
 public class GimbalAdapter {
     private static final String TAG = "GimbalAdapter";
-    private static final String PREFERENCE_NAME = "com.urbanairhsip.gimbal.preferences";
-    private static final String STARTED_PREFERENCE = "com.urbanairhsip.gimbal.started";
-    private static final String API_KEY_PREFERENCE = "com.urbanairhsip.gimbal.api_key";
+    private static final String PREFERENCE_NAME = "com.urbanairship.gimbal.preferences";
+    private static final String STARTED_PREFERENCE = "com.urbanairship.gimbal.started";
+    private static final String API_KEY_PREFERENCE = "com.urbanairship.gimbal.api_key";
 
     private static final String SOURCE = "Gimbal";
 

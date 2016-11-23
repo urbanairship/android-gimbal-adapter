@@ -10,7 +10,7 @@ Urban Airship.
 
 ## Installation
 
-To install it add the following dependency to your applications build.gradle file:
+To install it add the following dependency to your application's build.gradle file:
 ```
    compile 'com.urbanairship.android:gimbal-adapter:1.0.0'
 ```
@@ -29,7 +29,7 @@ once.
 ### Android Marshmallow Permissions
 
 Before the adapter is able to be started on Android M, it must request the location permission
-``FINE_LOCATION``. The adapter has convenience methods that you can use to request permissions while
+``ACCESS_FINE_LOCATION``. The adapter has convenience methods that you can use to request permissions while
 starting the adapter:
 ```
     GimbalAdapter.shared(context).startWithPermissionPrompt("## PLACE YOUR API KEY HERE ##", new GimbalAdapter.PermissionResultCallback() {
@@ -45,7 +45,7 @@ starting the adapter:
 Alternatively you can follow [requesting runtime permissions](https://developer.android.com/training/permissions/requesting.html)
 to manually request the proper permissions. Then once the permissions are granted, call start on the adapter.
 
-## Stoping the adapter
+## Stopping the adapter
 
 Adapter can be stopped at anytime by calling:
 ```
