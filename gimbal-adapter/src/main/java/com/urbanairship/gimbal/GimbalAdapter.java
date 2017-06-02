@@ -180,7 +180,7 @@ public class GimbalAdapter {
         Gimbal.setApiKey((Application) context.getApplicationContext(), gimbalApiKey);
         PlaceManager.getInstance().addListener(placeEventListener);
         setDeviceAttributes();
-        Log.i(TAG, String.format("Gimbal Restore, isStarted: {}, Gimbal application instance identifier: {}",Gimbal.isStarted(),Gimbal.getApplicationInstanceIdentifier()));
+        Log.i(TAG, String.format("Gimbal Restore, isStarted: %b, Gimbal application instance identifier: %s",Gimbal.isStarted(),Gimbal.getApplicationInstanceIdentifier()));
     }
 
     /**
@@ -198,12 +198,11 @@ public class GimbalAdapter {
         preferences.edit()
                    .putString(API_KEY_PREFERENCE, gimbalApiKey)
                    .apply();
-        preferences.edit().commit();
         Gimbal.setApiKey((Application) context.getApplicationContext(), gimbalApiKey);
         Gimbal.start();
         PlaceManager.getInstance().addListener(placeEventListener);
         setDeviceAttributes();
-        Log.i(TAG, String.format("Gimbal Start, isStarted: {}, Gimbal application instance identifier: {}",Gimbal.isStarted(),Gimbal.getApplicationInstanceIdentifier()));
+        Log.i(TAG, String.format("Gimbal Start, isStarted: %b, Gimbal application instance identifier: %s",Gimbal.isStarted(),Gimbal.getApplicationInstanceIdentifier()));
         return Gimbal.isStarted();
     }
 
