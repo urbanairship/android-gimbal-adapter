@@ -23,6 +23,15 @@
 
         </receiver>
 
+        <receiver android:name="com.urbanairship.gimbal.GimbalAirshipReceiver"
+            android:exported="false">
+
+            <intent-filter>
+                <action android:name="com.urbanairship.push.CHANNEL_UPDATED" />
+                <category android:name="${applicationId}" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name="com.gimbal.internal.service.GimbalService"
             android:exported="false">
