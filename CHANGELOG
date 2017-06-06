@@ -1,6 +1,11 @@
 Android ChangeLog
 =================
 
+Version 1.1.0 June 6, 2017
+==========================
+- Updated Urban Airship SDK to 8.5.1
+- Added device attribute tracking between Urban Airship and Gimbal SDKs
+
 Version 1.0.0 December 2, 2016
 ==============================
 - Initial Gimbal Adapter release
