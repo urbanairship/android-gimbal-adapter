@@ -1,6 +1,10 @@
 Android ChangeLog
 =================
 
+Version 1.1.1 December 7, 2017
+==========================
+- Fix Gimbal initilization
+
 Version 1.1.0 June 6, 2017
 ==========================
 - Updated Urban Airship SDK to 8.5.1

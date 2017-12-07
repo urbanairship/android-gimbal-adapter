@@ -1,5 +1,5 @@
 group = 'com.urbanairship.android'
-version = '1.1.0'
+version = '1.1.1'
 description = "Urban Airship Gimbal Adapter"
 
 apply plugin: 'com.android.library'
