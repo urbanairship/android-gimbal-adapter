@@ -184,10 +184,12 @@ public class GimbalAdapter {
      */
     public void restore() {
         String gimbalApiKey = preferences.getString(API_KEY_PREFERENCE, null);
-        Gimbal.setApiKey((Application) context.getApplicationContext(), gimbalApiKey);
-        PlaceManager.getInstance().addListener(placeEventListener);
-        updateDeviceAttributes();
-        Log.i(TAG, String.format("Gimbal Restore, isStarted: %b, Gimbal application instance identifier: %s", Gimbal.isStarted(), Gimbal.getApplicationInstanceIdentifier()));
+        if (gimbalApiKey != null) {
+            Gimbal.setApiKey((Application) context.getApplicationContext(), gimbalApiKey);
+            PlaceManager.getInstance().addListener(placeEventListener);
+            updateDeviceAttributes();
+            Log.i(TAG, String.format("Gimbal Restore, isStarted: %b, Gimbal application instance identifier: %s", Gimbal.isStarted(), Gimbal.getApplicationInstanceIdentifier()));
+        }
     }
 
     /**
@@ -286,28 +288,32 @@ public class GimbalAdapter {
      * Updates Gimbal and Urban Airship device attributes.
      */
     void updateDeviceAttributes() {
-        Map<String, String> deviceAttributes = new HashMap<>();
+        String gimbalApiKey = preferences.getString(API_KEY_PREFERENCE, null);
+        if (gimbalApiKey != null) {
 
-        if (DeviceAttributesManager.getInstance().getDeviceAttributes() != null
-                && DeviceAttributesManager.getInstance().getDeviceAttributes().size() > 0) {
-            deviceAttributes.putAll(DeviceAttributesManager.getInstance().getDeviceAttributes());
-        }
+            Map<String, String> deviceAttributes = new HashMap<>();
 
-        if (UAirship.shared().getNamedUser().getId() != null) {
-            deviceAttributes.put(GIMBAL_UA_NAMED_USER_ID, UAirship.shared().getNamedUser().getId());
-        }
+            if (DeviceAttributesManager.getInstance().getDeviceAttributes() != null
+                    && DeviceAttributesManager.getInstance().getDeviceAttributes().size() > 0) {
+                deviceAttributes.putAll(DeviceAttributesManager.getInstance().getDeviceAttributes());
+            }
 
-        if (UAirship.shared().getPushManager().getChannelId() != null) {
-            deviceAttributes.put(GIMBAL_UA_CHANNEL_ID, UAirship.shared().getPushManager().getChannelId());
-        }
+            if (UAirship.shared().getNamedUser().getId() != null) {
+                deviceAttributes.put(GIMBAL_UA_NAMED_USER_ID, UAirship.shared().getNamedUser().getId());
+            }
 
-        if (deviceAttributes.size() > 0) {
-            DeviceAttributesManager.getInstance().setDeviceAttributes(deviceAttributes);
-        }
+            if (UAirship.shared().getPushManager().getChannelId() != null) {
+                deviceAttributes.put(GIMBAL_UA_CHANNEL_ID, UAirship.shared().getPushManager().getChannelId());
+            }
 
-        String gimbalInstanceId = Gimbal.getApplicationInstanceIdentifier();
-        if (gimbalInstanceId != null) {
-            UAirship.shared().getAnalytics().editAssociatedIdentifiers().addIdentifier(UA_GIMBAL_APPLICATION_INSTANCE_ID, gimbalInstanceId).apply();
+            if (deviceAttributes.size() > 0) {
+                DeviceAttributesManager.getInstance().setDeviceAttributes(deviceAttributes);
+            }
+
+            String gimbalInstanceId = Gimbal.getApplicationInstanceIdentifier();
+            if (gimbalInstanceId != null) {
+                UAirship.shared().getAnalytics().editAssociatedIdentifiers().addIdentifier(UA_GIMBAL_APPLICATION_INSTANCE_ID, gimbalInstanceId).apply();
+            }
         }
     }
 
