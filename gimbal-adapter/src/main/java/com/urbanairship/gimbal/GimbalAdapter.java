@@ -263,10 +263,6 @@ public class GimbalAdapter {
                 .apply();
 
         Gimbal.setApiKey((Application) context.getApplicationContext(), gimbalApiKey);
-        PlaceManager.getInstance().addListener(placeEventListener);
-        updateDeviceAttributes();
-
-        Gimbal.setApiKey((Application) context.getApplicationContext(), gimbalApiKey);
         Gimbal.start();
         PlaceManager.getInstance().addListener(placeEventListener);
         updateDeviceAttributes();
