@@ -38,6 +38,8 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 public class GimbalAdapter {
     private static final String PREFERENCE_NAME = "com.urbanairship.gimbal.preferences";
     private static final String API_KEY_PREFERENCE = "com.urbanairship.gimbal.api_key";
+    private static final String STARTED_REFERENCE = "com.urbanairship.gimbal.is_started";
+
     private static final String TAG = "GimbalAdapter";
     private static final String SOURCE = "Gimbal";
 
@@ -52,6 +54,9 @@ public class GimbalAdapter {
     private static GimbalAdapter instance;
     private final Context context;
     private final List<Listener> listeners = new ArrayList<>();
+    private boolean isAdapterStarted = false;
+    private RequestPermissionsTask requestPermissionsTask;
+
 
     /**
      * Permission result callback.
@@ -184,11 +189,10 @@ public class GimbalAdapter {
      */
     public void restore() {
         String gimbalApiKey = preferences.getString(API_KEY_PREFERENCE, null);
-        if (gimbalApiKey != null) {
-            Gimbal.setApiKey((Application) context.getApplicationContext(), gimbalApiKey);
-            PlaceManager.getInstance().addListener(placeEventListener);
-            updateDeviceAttributes();
-            Log.i(TAG, String.format("Gimbal Restore, isStarted: %b, Gimbal application instance identifier: %s", Gimbal.isStarted(), Gimbal.getApplicationInstanceIdentifier()));
+        boolean previouslyStarted = preferences.getBoolean(STARTED_REFERENCE, false);
+        if (gimbalApiKey != null && previouslyStarted) {
+            Log.i(TAG, "Restoring Gimbal Adapter");
+            startAdapter(gimbalApiKey);
         }
     }
 
@@ -204,15 +208,7 @@ public class GimbalAdapter {
      */
     @RequiresPermission(ACCESS_FINE_LOCATION)
     public boolean start(@NonNull String gimbalApiKey) {
-        preferences.edit()
-                .putString(API_KEY_PREFERENCE, gimbalApiKey)
-                .apply();
-
-        Gimbal.setApiKey((Application) context.getApplicationContext(), gimbalApiKey);
-        Gimbal.start();
-        PlaceManager.getInstance().addListener(placeEventListener);
-        updateDeviceAttributes();
-        Log.i(TAG, String.format("Gimbal Start, isStarted: %b, Gimbal application instance identifier: %s", Gimbal.isStarted(), Gimbal.getApplicationInstanceIdentifier()));
+        startAdapter(gimbalApiKey);
         return Gimbal.isStarted();
     }
 
@@ -238,12 +234,12 @@ public class GimbalAdapter {
      * @param callback     Optional callback to get the result of the permission prompt.
      */
     public void startWithPermissionPrompt(@NonNull final String gimbalApiKey, @Nullable final PermissionResultCallback callback) {
-        RequestPermissionsTask task = new RequestPermissionsTask(context.getApplicationContext(), new PermissionResultCallback() {
+        requestPermissionsTask = new RequestPermissionsTask(context.getApplicationContext(), new PermissionResultCallback() {
             @Override
             public void onResult(boolean enabled) {
                 if (enabled) {
                     //noinspection MissingPermission
-                    start(gimbalApiKey);
+                    startAdapter(gimbalApiKey);
                 }
 
                 if (callback != null) {
@@ -252,15 +248,45 @@ public class GimbalAdapter {
             }
         });
 
-        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ACCESS_FINE_LOCATION);
+        requestPermissionsTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ACCESS_FINE_LOCATION);
+    }
+
+
+    private void startAdapter(@NonNull String gimbalApiKey) {
+        if (isAdapterStarted) {
+            return;
+        }
+
+        preferences.edit()
+                .putString(API_KEY_PREFERENCE, gimbalApiKey)
+                .putBoolean(STARTED_REFERENCE, true)
+                .apply();
+
+        Gimbal.setApiKey((Application) context.getApplicationContext(), gimbalApiKey);
+        Gimbal.start();
+        PlaceManager.getInstance().addListener(placeEventListener);
+        updateDeviceAttributes();
+
+        Log.i(TAG, String.format("Gimbal Adapter started. Gimabl.isStarted: %b, Gimbal application instance identifier: %s", Gimbal.isStarted(), Gimbal.getApplicationInstanceIdentifier()));
+        isAdapterStarted = true;
     }
 
     /**
      * Stops the adapter.
      */
     public void stop() {
+        if (requestPermissionsTask != null) {
+            requestPermissionsTask.cancel(true);
+        }
+
         Gimbal.stop();
         PlaceManager.getInstance().removeListener(placeEventListener);
+        isAdapterStarted = false;
+
+        preferences.edit()
+                .putBoolean(STARTED_REFERENCE, false)
+                .apply();
+
         Log.i(TAG, "Adapter Stopped");
     }
 
@@ -283,6 +309,7 @@ public class GimbalAdapter {
 
         return false;
     }
+
 
     /**
      * Updates Gimbal and Urban Airship device attributes.

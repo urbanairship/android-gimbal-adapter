@@ -1,5 +1,5 @@
 group = 'com.urbanairship.android'
-version = '1.1.1'
+version = '2.0.0'
 description = "Urban Airship Gimbal Adapter"
 
 apply plugin: 'com.android.library'
@@ -7,13 +7,12 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.2"
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 25
-        consumerProguardFiles 'consumer-proguard.txt'
+        targetSdkVersion 27
     }
 
     compileOptions {
@@ -23,9 +22,9 @@ android {
 }
 
 dependencies {
-    compile 'com.gimbal.android.v2:gimbal-sdk:+'
-    compile 'com.gimbal.android.v2:gimbal-slf4j-impl:+'
-    provided 'com.urbanairship.android:urbanairship-sdk:8.5.1'
+    implementation group:'com.gimbal.android.v3', name:'gimbal-sdk', version:'3.0'
+    implementation group:'com.gimbal.android.v3', name:'gimbal-slf4j-impl', version:'3.0'
+    implementation 'com.urbanairship.android:urbanairship-sdk:8.9.6'
 }
 
 install {
