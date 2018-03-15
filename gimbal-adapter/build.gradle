@@ -1,5 +1,5 @@
 group = 'com.urbanairship.android'
-version = '2.0.0'
+version = '2.0.1'
 description = "Urban Airship Gimbal Adapter"
 
 apply plugin: 'com.android.library'
@@ -22,7 +22,7 @@ android {
 }
 
 dependencies {
-    implementation group:'com.gimbal.android.v3', name:'gimbal-sdk', version:'3.0'
+    implementation group:'com.gimbal.android.v3', name:'gimbal-sdk', version:'3.1.1'
     implementation group:'com.gimbal.android.v3', name:'gimbal-slf4j-impl', version:'3.0'
     implementation 'com.urbanairship.android:urbanairship-sdk:8.9.6'
 }
