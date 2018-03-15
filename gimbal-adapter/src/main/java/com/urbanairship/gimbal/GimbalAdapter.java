@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Urban Airship and Contributors
+ * Copyright 2018 Urban Airship and Contributors
  */
 
 package com.urbanairship.gimbal;
@@ -209,7 +209,7 @@ public class GimbalAdapter {
     @RequiresPermission(ACCESS_FINE_LOCATION)
     public boolean start(@NonNull String gimbalApiKey) {
         startAdapter(gimbalApiKey);
-        return Gimbal.isStarted();
+        return isStarted();
     }
 
     /**
@@ -294,7 +294,7 @@ public class GimbalAdapter {
      * Check if the adapter is started or not.
      */
     public boolean isStarted() {
-        return Gimbal.isStarted();
+        return isAdapterStarted && Gimbal.isStarted();
     }
 
     /**
