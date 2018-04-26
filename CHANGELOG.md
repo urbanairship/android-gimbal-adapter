@@ -1,6 +1,10 @@
 Android ChangeLog
 =================
 
+Version 2.1.0 - April 25, 2018
+==============================
+- Updated Urban Airship SDK to 9.1.0.
+
 Version 2.0.1 March 15, 2018
 ============================
 - Updated Gimbal SDK to 3.1.1
