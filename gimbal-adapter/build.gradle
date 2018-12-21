@@ -21,9 +21,9 @@ android {
 }
 
 dependencies {
-    implementation group:'com.gimbal.android.v3', name:'gimbal-sdk', version:'3.2.3'
+    api group:'com.gimbal.android.v3', name:'gimbal-sdk', version:'3.2.3'
     implementation group:'com.gimbal.android.v3', name:'gimbal-slf4j-impl', version:'3.2.3'
-    implementation project(":urbanairship-core")
+    api project(":urbanairship-core")
 }
 
 // Create the pom configuration:
