@@ -4,6 +4,7 @@
 
 package com.urbanairship.gimbal;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -106,7 +107,12 @@ public class GimbalAdapter {
             UAirship.shared(new UAirship.OnReadyCallback() {
                 @Override
                 public void onAirshipReady(UAirship airship) {
-                    RegionEvent enter = new RegionEvent(visit.getPlace().getIdentifier(), SOURCE, RegionEvent.BOUNDARY_EVENT_ENTER);
+                    RegionEvent enter = RegionEvent.newBuilder()
+                            .setBoundaryEvent(RegionEvent.BOUNDARY_EVENT_ENTER)
+                            .setSource(SOURCE)
+                            .setRegionId(visit.getPlace().getIdentifier())
+                            .build();
+
                     airship.getAnalytics().addEvent(enter);
 
                     synchronized (listeners) {
@@ -127,7 +133,13 @@ public class GimbalAdapter {
             UAirship.shared(new UAirship.OnReadyCallback() {
                 @Override
                 public void onAirshipReady(UAirship airship) {
-                    RegionEvent exit = new RegionEvent(visit.getPlace().getIdentifier(), SOURCE, RegionEvent.BOUNDARY_EVENT_EXIT);
+
+                    RegionEvent exit = RegionEvent.newBuilder()
+                            .setBoundaryEvent(RegionEvent.BOUNDARY_EVENT_EXIT)
+                            .setSource(SOURCE)
+                            .setRegionId(visit.getPlace().getIdentifier())
+                            .build();
+
                     airship.getAnalytics().addEvent(exit);
 
                     synchronized (listeners) {
@@ -325,12 +337,14 @@ public class GimbalAdapter {
                 deviceAttributes.putAll(DeviceAttributesManager.getInstance().getDeviceAttributes());
             }
 
-            if (UAirship.shared().getNamedUser().getId() != null) {
-                deviceAttributes.put(GIMBAL_UA_NAMED_USER_ID, UAirship.shared().getNamedUser().getId());
+            String namedUserId = UAirship.shared().getNamedUser().getId();
+            if (namedUserId != null) {
+                deviceAttributes.put(GIMBAL_UA_NAMED_USER_ID, namedUserId);
             }
 
-            if (UAirship.shared().getPushManager().getChannelId() != null) {
-                deviceAttributes.put(GIMBAL_UA_CHANNEL_ID, UAirship.shared().getPushManager().getChannelId());
+            String channelId = UAirship.shared().getPushManager().getChannelId();
+            if (channelId != null) {
+                deviceAttributes.put(GIMBAL_UA_CHANNEL_ID, channelId);
             }
 
             if (deviceAttributes.size() > 0) {
@@ -344,8 +358,9 @@ public class GimbalAdapter {
         }
     }
 
-    private class RequestPermissionsTask extends AsyncTask<String, Void, Boolean> {
+    private static class RequestPermissionsTask extends AsyncTask<String, Void, Boolean> {
 
+        @SuppressLint("StaticFieldLeak")
         private final Context context;
         private PermissionResultCallback callback;
 
