@@ -1,6 +1,15 @@
 Android ChangeLog
 =================
 
+Version 2.2.0 - March 14, 2019
+==============================
+Fixed a security issue within Android Urban Airship SDK dependency, that could allow trusted URL redirects in
+certain edge cases. All applications that are using version 2.1.0 should update as soon as possible.
+For more details, please email security@urbanairship.com.
+
+- Updated Urban Airship SDK to 9.7.1
+- Updated Gimbal SDK to 3.2.3
+
 Version 2.1.0 - April 25, 2018
 ==============================
 - Updated Urban Airship SDK to 9.1.0.
