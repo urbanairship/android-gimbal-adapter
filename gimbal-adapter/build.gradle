@@ -21,8 +21,8 @@ android {
 }
 
 dependencies {
-    api group:'com.gimbal.android.v3', name:'gimbal-sdk', version:'3.2.3'
-    implementation group:'com.gimbal.android.v3', name:'gimbal-slf4j-impl', version:'3.2.3'
+    api 'com.gimbal.android.v4:gimbal-sdk:4.0.1'
+    implementation 'com.gimbal.android.v4:gimbal-slf4j-impl:4.0.1'
     api project(":urbanairship-core")
 }
 
