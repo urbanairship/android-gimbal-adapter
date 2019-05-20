@@ -28,6 +28,10 @@ public class AirshipReadyReceiver extends BroadcastReceiver {
             }
 
             @Override
+            public void onChannelUpdated(@NonNull String channelId) {
+            }
+
+            @Override
             public void onPushTokenUpdated(@NonNull String token) {
 
             }
