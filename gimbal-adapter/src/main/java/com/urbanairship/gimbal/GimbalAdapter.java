@@ -337,11 +337,15 @@ public class GimbalAdapter {
             String namedUserId = UAirship.shared().getNamedUser().getId();
             if (namedUserId != null) {
                 deviceAttributes.put(GIMBAL_UA_NAMED_USER_ID, namedUserId);
+            } else {
+                deviceAttributes.remove(GIMBAL_UA_NAMED_USER_ID);
             }
 
             String channelId = UAirship.shared().getPushManager().getChannelId();
             if (channelId != null) {
                 deviceAttributes.put(GIMBAL_UA_CHANNEL_ID, channelId);
+            } else {
+                deviceAttributes.remove(GIMBAL_UA_CHANNEL_ID);
             }
 
             if (deviceAttributes.size() > 0) {
