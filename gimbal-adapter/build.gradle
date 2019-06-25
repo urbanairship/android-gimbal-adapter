@@ -1,5 +1,5 @@
 group = 'com.urbanairship.android'
-version = '2.2.0'
+version = '3.0.0'
 description = "Urban Airship Gimbal Adapter"
 
 apply plugin: 'com.android.library'
@@ -21,9 +21,9 @@ android {
 }
 
 dependencies {
-    implementation group:'com.gimbal.android.v3', name:'gimbal-sdk', version:'3.2.3'
-    implementation group:'com.gimbal.android.v3', name:'gimbal-slf4j-impl', version:'3.2.3'
-    implementation 'com.urbanairship.android:urbanairship-core:9.7.1'
+    api 'com.gimbal.android.v4:gimbal-sdk:4.0.1'
+    implementation 'com.gimbal.android.v4:gimbal-slf4j-impl:4.0.1'
+    api 'com.urbanairship.android:urbanairship-core:10.0.1'
 }
 
 // Create the pom configuration:
