@@ -12,7 +12,7 @@ Urban Airship.
 
 To install it add the following dependency to your application's build.gradle file:
 ```
-   compile 'com.urbanairship.android:gimbal-adapter:3.0.0'
+   implementation 'com.urbanairship.android:gimbal-adapter:3.0.0'
 ```
 
 ## Starting the adapter
