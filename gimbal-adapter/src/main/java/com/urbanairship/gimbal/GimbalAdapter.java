@@ -297,7 +297,7 @@ public class GimbalAdapter {
         try {
             Gimbal.stop();
             PlaceManager.getInstance().removeListener(placeEventListener);
-        } catch (Exception e) {
+        } catch (java.lang.IllegalStateException e) {
             Log.w(TAG,"Caught exception stopping Gimbal. ", e);
         }
 
