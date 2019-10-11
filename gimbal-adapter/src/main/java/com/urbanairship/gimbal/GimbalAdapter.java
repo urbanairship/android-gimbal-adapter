@@ -10,10 +10,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresPermission;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
+import androidx.core.content.ContextCompat;
 import android.util.Log;
 
 import com.gimbal.android.DeviceAttributesManager;
@@ -21,6 +21,7 @@ import com.gimbal.android.Gimbal;
 import com.gimbal.android.PlaceEventListener;
 import com.gimbal.android.PlaceManager;
 import com.gimbal.android.Visit;
+import com.urbanairship.Logger;
 import com.urbanairship.UAirship;
 import com.urbanairship.location.RegionEvent;
 import com.urbanairship.util.DateUtils;
@@ -284,12 +285,22 @@ public class GimbalAdapter {
      * Stops the adapter.
      */
     public void stop() {
+        if (!isStarted()) {
+            Log.w(TAG, "stop() called when adapter was not started");
+            return;
+        }
+
         if (requestPermissionsTask != null) {
             requestPermissionsTask.cancel(true);
         }
 
-        Gimbal.stop();
-        PlaceManager.getInstance().removeListener(placeEventListener);
+        try {
+            Gimbal.stop();
+            PlaceManager.getInstance().removeListener(placeEventListener);
+        } catch (java.lang.IllegalStateException e) {
+            Log.w(TAG,"Caught exception stopping Gimbal. ", e);
+        }
+
         isAdapterStarted = false;
 
         preferences.edit()

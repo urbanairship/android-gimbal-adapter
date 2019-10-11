@@ -1,11 +1,16 @@
 Android ChangeLog
 =================
 
+Version 4.0.0 - October 11, 2019
+================================
+- Updated Airship SDK to 11.0.3
+- Don't stop Gimbal if the adapter is not started.
+- Handle exception thrown when Gimbal.stop() is called when Gimbal is not started.
+
 Version 3.0.0 - June 21, 2019
 ==============================
 - Updated Airship SDK to 10.0.1
 - Updated Gimbal SDK to 4.0.1
-
 
 Version 2.2.0 - March 14, 2019
 ==============================
