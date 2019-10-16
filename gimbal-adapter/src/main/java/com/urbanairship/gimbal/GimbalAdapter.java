@@ -187,7 +187,7 @@ public class GimbalAdapter {
      *
      * @param listener The listener.
      */
-    public void removeListner(Listener listener) {
+    public void removeListener(Listener listener) {
         synchronized (listeners) {
             listeners.remove(listener);
         }
