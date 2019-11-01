@@ -272,13 +272,16 @@ public class GimbalAdapter {
                 .putBoolean(STARTED_REFERENCE, true)
                 .apply();
 
-        Gimbal.setApiKey((Application) context.getApplicationContext(), gimbalApiKey);
-        Gimbal.start();
-        PlaceManager.getInstance().addListener(placeEventListener);
-        updateDeviceAttributes();
-
-        Log.i(TAG, String.format("Gimbal Adapter started. Gimabl.isStarted: %b, Gimbal application instance identifier: %s", Gimbal.isStarted(), Gimbal.getApplicationInstanceIdentifier()));
-        isAdapterStarted = true;
+        try {
+            Gimbal.setApiKey((Application) context.getApplicationContext(), gimbalApiKey);
+            Gimbal.start();
+            PlaceManager.getInstance().addListener(placeEventListener);
+            updateDeviceAttributes();
+            Log.i(TAG, String.format("Gimbal Adapter started. Gimbal.isStarted: %b, Gimbal application instance identifier: %s", Gimbal.isStarted(), Gimbal.getApplicationInstanceIdentifier()));
+            isAdapterStarted = true;
+        } catch (Exception e) {
+            Log.e(TAG,"Failed to start Gimbal.", e);
+        }
     }
 
     /**
@@ -294,18 +297,19 @@ public class GimbalAdapter {
             requestPermissionsTask.cancel(true);
         }
 
-        try {
-            Gimbal.stop();
-            PlaceManager.getInstance().removeListener(placeEventListener);
-        } catch (java.lang.IllegalStateException e) {
-            Log.w(TAG,"Caught exception stopping Gimbal. ", e);
-        }
-
-        isAdapterStarted = false;
-
         preferences.edit()
                 .putBoolean(STARTED_REFERENCE, false)
                 .apply();
+
+        try {
+            Gimbal.stop();
+            PlaceManager.getInstance().removeListener(placeEventListener);
+        } catch (Exception e) {
+            Log.w(TAG,"Caught exception stopping Gimbal. ", e);
+            return;
+        }
+
+        isAdapterStarted = false;
 
         Log.i(TAG, "Adapter Stopped");
     }
@@ -314,7 +318,12 @@ public class GimbalAdapter {
      * Check if the adapter is started or not.
      */
     public boolean isStarted() {
-        return isAdapterStarted && Gimbal.isStarted();
+        try {
+            return isAdapterStarted && Gimbal.isStarted();
+        } catch (Exception e) {
+            Log.w(TAG,"Unable to check Gimbal.isStarted().", e);
+            return false;
+        }
     }
 
     /**
