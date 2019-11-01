@@ -1,6 +1,12 @@
 Android ChangeLog
 =================
 
+Version 4.1.0 - November 1, 2019
+================================
+- Updated Airship SDK to 11.0.5.
+- Updated Gimbal SDK to 4.2.1
+- Catch all exceptions thrown from the Gimbal SDK that originate from the Adapter.
+
 Version 4.0.0 - October 11, 2019
 ================================
 - Updated Airship SDK to 11.0.3
