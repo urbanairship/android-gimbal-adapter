@@ -186,6 +186,17 @@ public class GimbalAdapter {
      * Removes an adapter listener.
      *
      * @param listener The listener.
+     * @deprecated Will be removed in 5.0.0, use {@link #removeListener(Listener)} instead.
+     */
+    @Deprecated
+    public void removeListner(Listener listener) {
+        removeListener(listener);
+    }
+
+    /**
+     * Removes an adapter listener.
+     *
+     * @param listener The listener.
      */
     public void removeListener(Listener listener) {
         synchronized (listeners) {
