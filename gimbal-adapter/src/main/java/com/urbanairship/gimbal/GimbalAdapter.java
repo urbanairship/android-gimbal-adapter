@@ -364,9 +364,15 @@ public class GimbalAdapter {
     private void updateDeviceAttributes() {
         Map<String, String> deviceAttributes = new HashMap<>();
 
-        if (DeviceAttributesManager.getInstance().getDeviceAttributes() != null
-                && DeviceAttributesManager.getInstance().getDeviceAttributes().size() > 0) {
-            deviceAttributes.putAll(DeviceAttributesManager.getInstance().getDeviceAttributes());
+        DeviceAttributesManager deviceAttributesManager = DeviceAttributesManager.getInstance();
+
+        if (deviceAttributesManager == null) {
+            return;
+        }
+
+        if (deviceAttributesManager.getDeviceAttributes() != null
+                && deviceAttributesManager.getDeviceAttributes().size() > 0) {
+            deviceAttributes.putAll(deviceAttributesManager.getDeviceAttributes());
         }
 
         String namedUserId = UAirship.shared().getNamedUser().getId();
@@ -383,8 +389,7 @@ public class GimbalAdapter {
             deviceAttributes.remove(GIMBAL_UA_CHANNEL_ID);
         }
 
-        DeviceAttributesManager deviceAttributesManager = DeviceAttributesManager.getInstance();
-        if (deviceAttributesManager != null && deviceAttributes.size() > 0) {
+        if (deviceAttributes.size() > 0) {
             deviceAttributesManager.setDeviceAttributes(deviceAttributes);
         }
 

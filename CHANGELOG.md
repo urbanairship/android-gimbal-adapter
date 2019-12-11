@@ -3,7 +3,7 @@ Android ChangeLog
 
 Version 4.1.1 - December 11, 2019
 =================================
-- Fixed null pointer exception due to updating Gimbal attributes if adapter is stopped.
+- Fixed null pointer exception due to updating Gimbal attributes when the adapter is stopped.
 
 Version 4.1.0 - November 1, 2019
 ================================
