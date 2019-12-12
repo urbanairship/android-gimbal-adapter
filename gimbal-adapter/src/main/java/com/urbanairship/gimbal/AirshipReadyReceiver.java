@@ -24,7 +24,7 @@ public class AirshipReadyReceiver extends BroadcastReceiver {
         UAirship.shared().getPushManager().addRegistrationListener(new RegistrationListener() {
             @Override
             public void onChannelCreated(@NonNull String channelId) {
-                GimbalAdapter.shared(context).updateDeviceAttributes();
+                GimbalAdapter.shared(context).onAirshipChannelCreated();
             }
 
             @Override
