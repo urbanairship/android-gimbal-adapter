@@ -10,6 +10,7 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 
 import com.urbanairship.UAirship;
+import com.urbanairship.channel.AirshipChannelListener;
 import com.urbanairship.push.RegistrationListener;
 
 /**
@@ -21,7 +22,7 @@ public class AirshipReadyReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         GimbalAdapter.shared(context).restore();
 
-        UAirship.shared().getPushManager().addRegistrationListener(new RegistrationListener() {
+        UAirship.shared().getChannel().addChannelListener(new AirshipChannelListener() {
             @Override
             public void onChannelCreated(@NonNull String channelId) {
                 GimbalAdapter.shared(context).onAirshipChannelCreated();
@@ -29,11 +30,6 @@ public class AirshipReadyReceiver extends BroadcastReceiver {
 
             @Override
             public void onChannelUpdated(@NonNull String channelId) {
-            }
-
-            @Override
-            public void onPushTokenUpdated(@NonNull String token) {
-
             }
         });
     }
