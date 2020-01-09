@@ -1,6 +1,10 @@
 Android ChangeLog
 =================
 
+Version 5.0.0 - January 9, 2020
+================================
+- Updated Airship SDK to 12.1.0
+
 Version 4.1.1 - December 11, 2019
 =================================
 - Fixed null pointer exception due to updating Gimbal attributes when the adapter is stopped.
