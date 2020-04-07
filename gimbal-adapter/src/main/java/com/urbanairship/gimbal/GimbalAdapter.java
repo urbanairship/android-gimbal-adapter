@@ -22,7 +22,7 @@ import com.gimbal.android.PlaceEventListener;
 import com.gimbal.android.PlaceManager;
 import com.gimbal.android.Visit;
 import com.urbanairship.UAirship;
-import com.urbanairship.location.RegionEvent;
+import com.urbanairship.analytics.location.RegionEvent;
 import com.urbanairship.util.DateUtils;
 import com.urbanairship.util.HelperActivity;
 
