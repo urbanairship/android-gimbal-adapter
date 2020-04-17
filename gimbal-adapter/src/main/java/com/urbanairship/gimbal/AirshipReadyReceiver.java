@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 
 import com.urbanairship.UAirship;
 import com.urbanairship.channel.AirshipChannelListener;
-import com.urbanairship.push.RegistrationListener;
 
 /**
  * Broadcast receiver for Airship Ready events.

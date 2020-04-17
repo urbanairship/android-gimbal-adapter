@@ -10,11 +10,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresPermission;
 import androidx.core.content.ContextCompat;
-import android.util.Log;
 
 import com.gimbal.android.DeviceAttributesManager;
 import com.gimbal.android.Gimbal;
