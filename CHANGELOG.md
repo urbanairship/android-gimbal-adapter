@@ -1,6 +1,10 @@
 Android ChangeLog
 =================
 
+Version 6.0.0 - April 22, 2020
+================================
+- Updated Airship SDK to 13.0.0
+
 Version 5.0.0 - January 9, 2020
 ================================
 - Updated Airship SDK to 12.1.0
