@@ -1,17 +1,17 @@
 group = 'com.urbanairship.android'
-version = '6.0.0'
 description = "Urban Airship Gimbal Adapter"
+version = rootProject.adapterVersion
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 29
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
     }
 
     compileOptions {
@@ -21,9 +21,9 @@ android {
 }
 
 dependencies {
-    api 'com.gimbal.android.v4:gimbal-sdk:4.2.1'
-    implementation 'com.gimbal.android.v4:gimbal-slf4j-impl:4.2.1'
-    api 'com.urbanairship.android:urbanairship-core:13.0.0'
+    api "com.gimbal.android.v4:gimbal-sdk:$rootProject.gimbalVersion"
+    implementation "com.gimbal.android.v4:gimbal-slf4j-impl:$rootProject.gimbalVersion"
+    api "com.urbanairship.android:urbanairship-core:$rootProject.airshipVersion"
 }
 
 // Create the pom configuration:
