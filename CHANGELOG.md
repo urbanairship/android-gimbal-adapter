@@ -1,6 +1,11 @@
 Android ChangeLog
 =================
 
+Version 6.1.0 - May 6, 2020
+===========================
+- Updated Airship SDK to 13.1.0
+- Added missing nullability annotations
+
 Version 6.0.0 - April 22, 2020
 ================================
 - Updated Airship SDK to 13.0.0
