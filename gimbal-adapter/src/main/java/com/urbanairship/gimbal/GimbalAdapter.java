@@ -85,7 +85,7 @@ public class GimbalAdapter {
          * @param event The Urban Airship event.
          * @param visit The Gimbal visit.
          */
-        void onRegionEntered(RegionEvent event, Visit visit);
+        void onRegionEntered(@NonNull RegionEvent event, @NonNull Visit visit);
 
         /**
          * Called when a Urban Airship Region exit event is created from a Gimbal Visit.
@@ -93,7 +93,7 @@ public class GimbalAdapter {
          * @param event The Urban Airship event.
          * @param visit The Gimbal visit.
          */
-        void onRegionExited(RegionEvent event, Visit visit);
+        void onRegionExited(@NonNull RegionEvent event, @NonNull Visit visit);
     }
 
     /**
@@ -102,13 +102,13 @@ public class GimbalAdapter {
      */
     private PlaceEventListener placeEventListener = new PlaceEventListener() {
         @Override
-        public void onVisitStart(final Visit visit) {
+        public void onVisitStart(@NonNull final Visit visit) {
             Log.i(TAG, "Entered place: " + visit.getPlace().getName() + "Entrance date: " +
                     DateUtils.createIso8601TimeStamp(visit.getArrivalTimeInMillis()));
 
             UAirship.shared(new UAirship.OnReadyCallback() {
                 @Override
-                public void onAirshipReady(UAirship airship) {
+                public void onAirshipReady(@NonNull UAirship airship) {
                     RegionEvent enter = RegionEvent.newBuilder()
                             .setBoundaryEvent(RegionEvent.BOUNDARY_EVENT_ENTER)
                             .setSource(SOURCE)
@@ -125,14 +125,14 @@ public class GimbalAdapter {
         }
 
         @Override
-        public void onVisitEnd(final Visit visit) {
+        public void onVisitEnd(@NonNull final Visit visit) {
             Log.i(TAG, "Exited place: " + visit.getPlace().getName() + "Entrance date: " +
                     DateUtils.createIso8601TimeStamp(visit.getArrivalTimeInMillis()) + "Exit date:" +
                     DateUtils.createIso8601TimeStamp(visit.getDepartureTimeInMillis()));
 
             UAirship.shared(new UAirship.OnReadyCallback() {
                 @Override
-                public void onAirshipReady(UAirship airship) {
+                public void onAirshipReady(@NonNull UAirship airship) {
 
                     RegionEvent exit = RegionEvent.newBuilder()
                             .setBoundaryEvent(RegionEvent.BOUNDARY_EVENT_EXIT)
@@ -155,7 +155,7 @@ public class GimbalAdapter {
      *
      * @param context The application context.
      */
-    GimbalAdapter(Context context) {
+    GimbalAdapter(@NonNull Context context) {
         this.context = context.getApplicationContext();
         this.preferences = context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
     }
@@ -163,7 +163,7 @@ public class GimbalAdapter {
     /**
      * GimbalAdapter shared instance.
      */
-    public synchronized static GimbalAdapter shared(Context context) {
+    public synchronized static GimbalAdapter shared(@NonNull Context context) {
         if (instance == null) {
             instance = new GimbalAdapter(context.getApplicationContext());
         }
@@ -176,7 +176,7 @@ public class GimbalAdapter {
      *
      * @param listener The listener.
      */
-    public void addListener(Listener listener) {
+    public void addListener(@NonNull Listener listener) {
         synchronized (listeners) {
             listeners.add(listener);
         }
@@ -189,7 +189,7 @@ public class GimbalAdapter {
      * @deprecated Will be removed in 5.0.0, use {@link #removeListener(Listener)} instead.
      */
     @Deprecated
-    public void removeListner(Listener listener) {
+    public void removeListner(@NonNull Listener listener) {
         removeListener(listener);
     }
 
@@ -198,7 +198,7 @@ public class GimbalAdapter {
      *
      * @param listener The listener.
      */
-    public void removeListener(Listener listener) {
+    public void removeListener(@NonNull Listener listener) {
         synchronized (listeners) {
             listeners.remove(listener);
         }
@@ -383,7 +383,7 @@ public class GimbalAdapter {
             deviceAttributes.remove(GIMBAL_UA_NAMED_USER_ID);
         }
 
-        String channelId = UAirship.shared().getPushManager().getChannelId();
+        String channelId = UAirship.shared().getChannel().getId();
         if (channelId != null) {
             deviceAttributes.put(GIMBAL_UA_CHANNEL_ID, channelId);
         } else {
