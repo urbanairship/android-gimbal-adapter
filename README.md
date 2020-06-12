@@ -1,18 +1,18 @@
-# Urban Airship Android Gimbal Adapter
+# Airship Android Gimbal Adapter
 
-The Urban Airship Gimbal Adapter is a drop-in class that allows users to integrate Gimbal Place events with
-Urban Airship.
+The Urban Airship Gimbal Adapter is a drop-in class that allows users
+to integrate Gimbal Place events with Airship.
 
 ## Resources
 - [Gimbal Developer Guide](https://gimbal.com/doc/android/v4/devguide.html)
 - [Gimbal Manager Portal](https://manager.gimbal.com)
-- [Urban Airship Getting Started guide](https://docs.airship.com/platform/android/getting-started/)
+- [Airship Getting Started guide](https://docs.airship.com/platform/android/getting-started/)
 
 ## Installation
 
 To install it add the following dependency to your application's build.gradle file:
 ```
-   implementation 'com.urbanairship.android:gimbal-adapter:6.2.0'
+   implementation 'com.urbanairship.android:gimbal-adapter:7.0.0'
 ```
 
 ## Set the Gimbal API key
