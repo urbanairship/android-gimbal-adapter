@@ -1,5 +1,10 @@
 # Android Airship Gimbal Adapter ChangeLog
 
+## Version 7.0.0 - June 12, 2020
+- Removed gimbalApiKey parameters from start methods. Applications should set the API key directly
+  on the Gimbal instance in Application#onCreate or use the new `enableGimbalApiKeyManagement(String)`
+  method to allow the adapter to manage setting the Gimbal API key.
+  
 ## Version 6.1.0 - May 6, 2020
 - Updated Airship SDK to 13.1.0
 - Added missing nullability annotations

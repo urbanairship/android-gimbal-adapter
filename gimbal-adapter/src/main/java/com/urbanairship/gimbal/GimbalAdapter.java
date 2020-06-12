@@ -14,7 +14,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresPermission;
+import androidx.annotation.RestrictTo;
 import androidx.core.content.ContextCompat;
 
 import com.gimbal.android.DeviceAttributesManager;
@@ -40,8 +40,8 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
  */
 public class GimbalAdapter {
     private static final String PREFERENCE_NAME = "com.urbanairship.gimbal.preferences";
-    private static final String API_KEY_PREFERENCE = "com.urbanairship.gimbal.api_key";
-    private static final String STARTED_REFERENCE = "com.urbanairship.gimbal.is_started";
+    private static final String STARTED_PREFERENCE = "com.urbanairship.gimbal.is_started";
+    private static final String API_KEY_PREFERENCE = "com.urbanairship.gimbal.gimbal_api_key";
 
     private static final String TAG = "GimbalAdapter";
     private static final String SOURCE = "Gimbal";
@@ -59,7 +59,6 @@ public class GimbalAdapter {
     private final List<Listener> listeners = new CopyOnWriteArrayList<>();
     private boolean isAdapterStarted = false;
     private RequestPermissionsTask requestPermissionsTask;
-
 
     /**
      * Permission result callback.
@@ -208,12 +207,21 @@ public class GimbalAdapter {
      * Restores the last run state. If previously started it will start listening, otherwise
      * it will stop listening. Should be called when the application starts up.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public void restore() {
         String gimbalApiKey = preferences.getString(API_KEY_PREFERENCE, null);
-        boolean previouslyStarted = preferences.getBoolean(STARTED_REFERENCE, false);
-        if (gimbalApiKey != null && previouslyStarted) {
-            Log.i(TAG, "Restoring Gimbal Adapter");
-            startAdapter(gimbalApiKey);
+        if (gimbalApiKey != null) {
+            Gimbal.setApiKey((Application) context.getApplicationContext(), gimbalApiKey);
+        }
+
+        boolean previouslyStarted = preferences.getBoolean(STARTED_PREFERENCE, false);
+        if (previouslyStarted) {
+            startAdapter();
+            if (isStarted()) {
+                Log.i(TAG, "Gimbal adapter restored");
+            } else {
+                Log.e(TAG, "Failed to restore Gimbal adapter. Make sure the API key is being set Application#onCreate");
+            }
         }
     }
 
@@ -221,15 +229,13 @@ public class GimbalAdapter {
      * Starts the adapter.
      * <p>
      * b>Note:</b> The adapter will fail to listen for places if the application does not have proper
-     * permissions. Use {@link #isPermissionGranted()} to check for permissions and {@link #startWithPermissionPrompt(String, PermissionResultCallback)}.
+     * permissions. Use {@link #isPermissionGranted()} to check for permissions and {@link #startWithPermissionPrompt(PermissionResultCallback)}.
      * to prompt the user for permissions while starting the adapter.
      *
-     * @param gimbalApiKey The Gimbal API key.
      * @return {@code true} if the adapter started, otherwise {@code false}.
      */
-    @RequiresPermission(ACCESS_FINE_LOCATION)
-    public boolean start(@NonNull String gimbalApiKey) {
-        startAdapter(gimbalApiKey);
+    public boolean start() {
+        startAdapter();
         return isStarted();
     }
 
@@ -238,11 +244,9 @@ public class GimbalAdapter {
      * <p>
      * b>Note:</b> You should only call this from a foregrounded activity. This will prompt the user
      * for permissions even if the application is currently in the background.
-     *
-     * @param gimbalApiKey The Gimbal API key.
      */
-    public void startWithPermissionPrompt(@NonNull final String gimbalApiKey) {
-        startWithPermissionPrompt(gimbalApiKey, null);
+    public void startWithPermissionPrompt() {
+        startWithPermissionPrompt((PermissionResultCallback) null);
     }
 
     /**
@@ -251,16 +255,15 @@ public class GimbalAdapter {
      * b>Note:</b> You should only call this from a foregrounded activity. This will prompt the user
      * for permissions even if the application is currently in the background.
      *
-     * @param gimbalApiKey The Gimbal API key.
-     * @param callback     Optional callback to get the result of the permission prompt.
+     * @param callback Optional callback to get the result of the permission prompt.
      */
-    public void startWithPermissionPrompt(@NonNull final String gimbalApiKey, @Nullable final PermissionResultCallback callback) {
+    public void startWithPermissionPrompt(@Nullable final PermissionResultCallback callback) {
         requestPermissionsTask = new RequestPermissionsTask(context.getApplicationContext(), new PermissionResultCallback() {
             @Override
             public void onResult(boolean enabled) {
                 if (enabled) {
                     //noinspection MissingPermission
-                    startAdapter(gimbalApiKey);
+                    startAdapter();
                 }
 
                 if (callback != null) {
@@ -272,26 +275,23 @@ public class GimbalAdapter {
         requestPermissionsTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ACCESS_FINE_LOCATION);
     }
 
-
-    private void startAdapter(@NonNull String gimbalApiKey) {
+    private void startAdapter() {
         if (isAdapterStarted) {
             return;
         }
 
         preferences.edit()
-                .putString(API_KEY_PREFERENCE, gimbalApiKey)
-                .putBoolean(STARTED_REFERENCE, true)
+                .putBoolean(STARTED_PREFERENCE, true)
                 .apply();
 
         try {
-            Gimbal.setApiKey((Application) context.getApplicationContext(), gimbalApiKey);
             Gimbal.start();
             PlaceManager.getInstance().addListener(placeEventListener);
             updateDeviceAttributes();
             Log.i(TAG, String.format("Gimbal Adapter started. Gimbal.isStarted: %b, Gimbal application instance identifier: %s", Gimbal.isStarted(), Gimbal.getApplicationInstanceIdentifier()));
             isAdapterStarted = true;
         } catch (Exception e) {
-            Log.e(TAG,"Failed to start Gimbal.", e);
+            Log.e(TAG, "Failed to start Gimbal.", e);
         }
     }
 
@@ -309,14 +309,14 @@ public class GimbalAdapter {
         }
 
         preferences.edit()
-                .putBoolean(STARTED_REFERENCE, false)
+                .putBoolean(STARTED_PREFERENCE, false)
                 .apply();
 
         try {
             Gimbal.stop();
             PlaceManager.getInstance().removeListener(placeEventListener);
         } catch (Exception e) {
-            Log.w(TAG,"Caught exception stopping Gimbal. ", e);
+            Log.w(TAG, "Caught exception stopping Gimbal. ", e);
             return;
         }
 
@@ -332,7 +332,7 @@ public class GimbalAdapter {
         try {
             return isAdapterStarted && Gimbal.isStarted();
         } catch (Exception e) {
-            Log.w(TAG,"Unable to check Gimbal.isStarted().", e);
+            Log.w(TAG, "Unable to check Gimbal.isStarted().", e);
             return false;
         }
     }
@@ -357,6 +357,24 @@ public class GimbalAdapter {
         if (isStarted()) {
             updateDeviceAttributes();
         }
+    }
+
+    /**
+     * Will automatically call persist the api key and call `Gimbal.setApiKey`
+     * on app start.
+     *
+     * @param gimbalApKey The Gimbal API key.
+     */
+    public void enableGimbalApiKeyManagement(@NonNull String gimbalApKey) {
+        preferences.edit().putString(API_KEY_PREFERENCE, gimbalApKey).apply();
+        Gimbal.setApiKey((Application) context, gimbalApKey);
+    }
+
+    /**
+     * Disables setting the Gimbal API key on app start.
+     */
+    public void disableGimbalApiKeyManagement() {
+        preferences.edit().remove(API_KEY_PREFERENCE).apply();
     }
 
     /**
@@ -431,5 +449,4 @@ public class GimbalAdapter {
             }
         }
     }
-
 }

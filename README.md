@@ -12,14 +12,33 @@ Urban Airship.
 
 To install it add the following dependency to your application's build.gradle file:
 ```
-   implementation 'com.urbanairship.android:gimbal-adapter:6.0.0'
+   implementation 'com.urbanairship.android:gimbal-adapter:6.2.0'
 ```
 
-## Starting the adapter
+## Set the Gimbal API key
+
+Set the API key during Application#onCreate:
+```
+   Gimbal.setApiKey(this, "## PLACE YOUR API KEY HERE ##");
+```
+
+Alternatively you can have the adapter automatically persist and set the API key on Gimbal when
+the app starts:
+```
+   GimbalAdapter.shared(context).enableGimbalApiKeyManagement("## PLACE YOUR API KEY HERE ##");
+```
+
+To stop this behavior, you will need to disable it:
+```
+   GimbalAdapter.shared(context).disableGimbalApiKeyManagement();
+```
+
+
+## Start the adapter
 
 To start the adapter call:
 ```
-   GimbalAdapter.shared(context).start("## PLACE YOUR API KEY HERE ##");
+   GimbalAdapter.shared(context).start();
 ```
 
 Once the adapter is started, it will automatically resume its last state if
@@ -32,7 +51,7 @@ Before the adapter is able to be started on Android M, it must request the locat
 ``ACCESS_FINE_LOCATION``. The adapter has convenience methods that you can use to request permissions while
 starting the adapter:
 ```
-    GimbalAdapter.shared(context).startWithPermissionPrompt("## PLACE YOUR API KEY HERE ##", new GimbalAdapter.PermissionResultCallback() {
+    GimbalAdapter.shared(context).startWithPermissionPrompt(new GimbalAdapter.PermissionResultCallback() {
         @Override
         public void onResult(boolean enabled) {
             if (enabled) {
