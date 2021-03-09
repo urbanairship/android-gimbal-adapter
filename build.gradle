@@ -2,11 +2,11 @@
 
 buildscript {
     ext {
-        adapterVersion = '7.0.0'
+        adapterVersion = '7.1.0'
 
         // Dependencies
-        airshipVersion = '13.1.0'
-        gimbalVersion = '4.2.1'
+        airshipVersion = '14.2.0'
+        gimbalVersion = '4.5.0'
 
         // Android SDK versions
         compileSdkVersion = 29
@@ -14,7 +14,7 @@ buildscript {
         minSdkVersion = 16
 
         // Gradle plugins
-        gradlePluginVersion = '4.0.0'
+        gradlePluginVersion = '4.1.2'
         bintrayPluginVersion = '1.8.4'
     }
 
@@ -24,8 +24,8 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.0'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+        classpath "com.android.tools.build:gradle:$gradlePluginVersion"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$bintrayPluginVersion"
     }
 }
 
