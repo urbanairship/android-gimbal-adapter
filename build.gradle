@@ -5,8 +5,8 @@ buildscript {
         adapterVersion = '7.1.0'
 
         // Dependencies
-        airshipVersion = '14.2.0'
-        gimbalVersion = '4.5.0'
+        airshipVersion = '14.6.0'
+        gimbalVersion = '4.5.2'
 
         // Android SDK versions
         compileSdkVersion = 29
