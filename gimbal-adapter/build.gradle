@@ -1,9 +1,12 @@
+plugins {
+    id 'com.android.library'
+    id 'maven-publish'
+    id 'signing'
+}
+
 group = 'com.urbanairship.android'
 description = "Urban Airship Gimbal Adapter"
 version = rootProject.adapterVersion
-
-apply plugin: 'com.android.library'
-apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -23,6 +26,11 @@ dependencies {
     api "com.gimbal.android.v4:gimbal-sdk:$rootProject.gimbalVersion"
     implementation "com.gimbal.android.v4:gimbal-slf4j-impl:$rootProject.gimbalVersion"
     api "com.urbanairship.android:urbanairship-core:$rootProject.airshipVersion"
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets["main"].java.srcDirs
 }
 
 // Create the pom configuration:
@@ -50,10 +58,12 @@ def pomConfig = {
 publishing {
     publications {
         Production(MavenPublication) {
-
-            artifact("$buildDir/outputs/aar/" + project.name + "-release.aar")
             groupId project.group
             artifactId project.name
+            version project.version
+
+            artifact("$buildDir/outputs/aar/" + project.name + "-release.aar")
+            artifact(sourcesJar)
 
             pom.withXml {
                 def root = asNode()
@@ -72,5 +82,24 @@ publishing {
                 root.children().last() + pomConfig
             }
         }
+    }
+}
+
+signing {
+    // secretKey and password are required for signing.
+    def secretKey = System.getenv("SIGNING_KEY") ?: findProperty("signing.key")
+    def password = System.getenv("SIGNING_PASSWORD") ?: findProperty("signing.password")
+    // keyId is optional.
+    def keyId = System.getenv("SIGNING_KEY_ID") ?: findProperty("signing.keyId")
+    if (secretKey != null) {
+        required = true
+        sign(publishing.publications)
+        if (keyId != null) {
+            useInMemoryPgpKeys(keyId, secretKey, password)
+        } else {
+            useInMemoryPgpKeys(secretKey, password)
+        }
+    } else {
+        logger.info("Missing signing key! Signing will not be configured.")
     }
 }
