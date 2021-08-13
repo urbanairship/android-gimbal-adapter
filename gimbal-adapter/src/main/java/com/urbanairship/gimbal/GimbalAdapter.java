@@ -99,7 +99,7 @@ public class GimbalAdapter {
      * Listener for Gimbal place events. Creates an analytics event
      * corresponding to boundary event type.
      */
-    private PlaceEventListener placeEventListener = new PlaceEventListener() {
+    private final PlaceEventListener placeEventListener = new PlaceEventListener() {
         @Override
         public void onVisitStart(@NonNull final Visit visit) {
             Log.i(TAG, "Entered place: " + visit.getPlace().getName() + "Entrance date: " +
@@ -185,7 +185,7 @@ public class GimbalAdapter {
      * Removes an adapter listener.
      *
      * @param listener The listener.
-     * @deprecated Will be removed in 5.0.0, use {@link #removeListener(Listener)} instead.
+     * @deprecated Will be removed in 8.0.0, use {@link #removeListener(Listener)} instead.
      */
     @Deprecated
     public void removeListner(@NonNull Listener listener) {

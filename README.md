@@ -12,7 +12,7 @@ Urban Airship.
 
 To install it add the following dependency to your application's build.gradle file:
 ```
-   implementation 'com.urbanairship.android:gimbal-adapter:6.2.0'
+   implementation 'com.urbanairship.android:gimbal-adapter:7.2.0'
 ```
 
 ## Set the Gimbal API key

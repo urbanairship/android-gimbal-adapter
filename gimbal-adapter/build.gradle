@@ -1,10 +1,12 @@
+plugins {
+    id 'com.android.library'
+    id 'maven-publish'
+    id 'signing'
+}
+
 group = 'com.urbanairship.android'
 description = "Urban Airship Gimbal Adapter"
 version = rootProject.adapterVersion
-
-apply plugin: 'com.android.library'
-apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -15,8 +17,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -24,6 +26,11 @@ dependencies {
     api "com.gimbal.android.v4:gimbal-sdk:$rootProject.gimbalVersion"
     implementation "com.gimbal.android.v4:gimbal-slf4j-impl:$rootProject.gimbalVersion"
     api "com.urbanairship.android:urbanairship-core:$rootProject.airshipVersion"
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets["main"].java.srcDirs
 }
 
 // Create the pom configuration:
@@ -51,10 +58,12 @@ def pomConfig = {
 publishing {
     publications {
         Production(MavenPublication) {
-
-            artifact("$buildDir/outputs/aar/" + project.name + "-release.aar")
             groupId project.group
             artifactId project.name
+            version project.version
+
+            artifact("$buildDir/outputs/aar/" + project.name + "-release.aar")
+            artifact(sourcesJar)
 
             pom.withXml {
                 def root = asNode()
@@ -76,45 +85,21 @@ publishing {
     }
 }
 
-bintray {
-    user = "$System.env.BINTRAY_USER"
-    key = "$System.env.BINTRAY_API_KEY"
-
-    if (project.hasProperty('bintrayUser') && project.hasProperty('bintrayApiKey')) {
-        // Credentials should be stored in ~/.gradle/gradle.properties
-        user = bintrayUser
-        key = bintrayApiKey
-    }
-
-    publications = ['Production']
-
-    pkg {
-        repo = 'android'
-        userOrg = 'urbanairship'
-        name = project.name
-        desc = project.description
-        websiteUrl = 'https://urbanairship.com'
-        licenses = ['Apache-2.0']
-        publish = true
-        vcsUrl = 'https://github.com/urbanairship/android-gimbal-adapter.git'
-        version {
-            desc = project.description
-            name = project.version
-            released = new Date()
-
-            mavenCentralSync {
-                user = "$System.env.MAVEN_USER"
-                password = "$System.env.MAVEN_PASSWORD"
-
-                if (project.hasProperty('mavenUser') && project.hasProperty('mavenPassword')) {
-                    // Credentials should be stored in ~/.gradle/gradle.properties
-                    user = mavenUser
-                    password = mavenPassword
-                }
-
-                sync = true
-                close = '1'
-            }
+signing {
+    // secretKey and password are required for signing.
+    def secretKey = System.getenv("SIGNING_KEY") ?: findProperty("signing.key")
+    def password = System.getenv("SIGNING_PASSWORD") ?: findProperty("signing.password")
+    // keyId is optional.
+    def keyId = System.getenv("SIGNING_KEY_ID") ?: findProperty("signing.keyId")
+    if (secretKey != null) {
+        required = true
+        sign(publishing.publications)
+        if (keyId != null) {
+            useInMemoryPgpKeys(keyId, secretKey, password)
+        } else {
+            useInMemoryPgpKeys(secretKey, password)
         }
+    } else {
+        logger.info("Missing signing key! Signing will not be configured.")
     }
 }
