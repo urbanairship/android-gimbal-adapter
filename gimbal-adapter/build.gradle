@@ -4,7 +4,6 @@ version = rootProject.adapterVersion
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -15,8 +14,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -71,49 +70,6 @@ publishing {
                 root.appendNode('name', project.name)
                 root.appendNode('url', 'https://urbanairship.com')
                 root.children().last() + pomConfig
-            }
-        }
-    }
-}
-
-bintray {
-    user = "$System.env.BINTRAY_USER"
-    key = "$System.env.BINTRAY_API_KEY"
-
-    if (project.hasProperty('bintrayUser') && project.hasProperty('bintrayApiKey')) {
-        // Credentials should be stored in ~/.gradle/gradle.properties
-        user = bintrayUser
-        key = bintrayApiKey
-    }
-
-    publications = ['Production']
-
-    pkg {
-        repo = 'android'
-        userOrg = 'urbanairship'
-        name = project.name
-        desc = project.description
-        websiteUrl = 'https://urbanairship.com'
-        licenses = ['Apache-2.0']
-        publish = true
-        vcsUrl = 'https://github.com/urbanairship/android-gimbal-adapter.git'
-        version {
-            desc = project.description
-            name = project.version
-            released = new Date()
-
-            mavenCentralSync {
-                user = "$System.env.MAVEN_USER"
-                password = "$System.env.MAVEN_PASSWORD"
-
-                if (project.hasProperty('mavenUser') && project.hasProperty('mavenPassword')) {
-                    // Credentials should be stored in ~/.gradle/gradle.properties
-                    user = mavenUser
-                    password = mavenPassword
-                }
-
-                sync = true
-                close = '1'
             }
         }
     }
