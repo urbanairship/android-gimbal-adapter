@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.urbanairship.android'
-description = "Urban Airship Gimbal Adapter"
+description = "Airship Gimbal Adapter"
 version = rootProject.adapterVersion
 
 android {
