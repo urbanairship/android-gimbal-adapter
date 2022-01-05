@@ -2,11 +2,11 @@
 
 buildscript {
     ext {
-        adapterVersion = '7.2.0'
+        adapterVersion = '7.3.0'
 
         // Dependencies
-        airshipVersion = '14.6.0'
-        gimbalVersion = '4.5.2'
+        airshipVersion = '16.1.1'
+        gimbalVersion = '4.6.0'
 
         // Android SDK versions
         compileSdkVersion = 29
@@ -14,7 +14,7 @@ buildscript {
         minSdkVersion = 21
 
         // Gradle plugins
-        gradlePluginVersion = '4.1.3'
+        gradlePluginVersion = '7.0.2'
         nexusPublishPluginVersion = '1.1.0'
     }
 
