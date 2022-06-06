@@ -1,5 +1,9 @@
 # Android Airship Gimbal Adapter ChangeLog
 
+## Version 7.4.0 - May 31, 2022
+- Updated Airship SDK to 16.5.0
+- Updated Gimbal SDK to 4.7.0
+
 ## Version 7.3.0 - January 5, 2022
 - Updated Airship SDK to 16.1.1
 - Updated Gimbal SDK to 4.6.0
