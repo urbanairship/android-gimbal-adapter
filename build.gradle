@@ -14,7 +14,7 @@ buildscript {
         minSdkVersion = 21
 
         // Gradle plugins
-        gradlePluginVersion = '7.0.3'
+        gradlePluginVersion = '7.2.1'
         nexusPublishPluginVersion = '1.1.0'
     }
 
