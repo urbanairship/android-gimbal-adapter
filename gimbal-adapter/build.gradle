@@ -26,6 +26,7 @@ dependencies {
     api "com.gimbal.android.v4:gimbal-sdk:$rootProject.gimbalVersion"
     implementation "com.gimbal.android.v4:gimbal-slf4j-impl:$rootProject.gimbalVersion"
     api "com.urbanairship.android:urbanairship-core:$rootProject.airshipVersion"
+    implementation "androidx.appcompat:appcompat:1.4.2"
 }
 
 task sourcesJar(type: Jar) {
