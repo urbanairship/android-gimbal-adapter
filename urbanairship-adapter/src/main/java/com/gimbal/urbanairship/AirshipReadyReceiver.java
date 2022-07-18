@@ -2,7 +2,7 @@
  * Copyright 2018 Urban Airship and Contributors
  */
 
-package com.urbanairship.gimbal;
+package com.gimbal.urbanairship;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

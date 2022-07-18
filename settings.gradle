@@ -1,1 +1,1 @@
-include ':gimbal-adapter'
+include ':urbanairship-adapter'

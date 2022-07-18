@@ -2,7 +2,9 @@
  * Copyright 2018 Urban Airship and Contributors
  */
 
-package com.urbanairship.gimbal;
+package com.gimbal.urbanairship;
+
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
@@ -17,23 +19,23 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresPermission;
 import androidx.core.content.ContextCompat;
 
+import com.gimbal.android.Attributes;
 import com.gimbal.android.DeviceAttributesManager;
 import com.gimbal.android.Gimbal;
 import com.gimbal.android.PlaceEventListener;
 import com.gimbal.android.PlaceManager;
 import com.gimbal.android.Visit;
 import com.urbanairship.UAirship;
+import com.urbanairship.analytics.CustomEvent;
 import com.urbanairship.analytics.location.RegionEvent;
+import com.urbanairship.json.JsonValue;
 import com.urbanairship.util.DateUtils;
 import com.urbanairship.util.HelperActivity;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 /**
  * GimbalAdapter interfaces Gimbal SDK functionality with Urban Airship services.
@@ -41,6 +43,9 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 public class GimbalAdapter {
     private static final String PREFERENCE_NAME = "com.urbanairship.gimbal.preferences";
     private static final String API_KEY_PREFERENCE = "com.urbanairship.gimbal.api_key";
+    private static final String TRACK_CUSTOM_ENTRY_PREFERENCE_KEY = "com.urbanairship.gimbal.track_custom_entry";
+    private static final String TRACK_CUSTOM_EXIT_PREFERENCE_KEY = "com.urbanairship.gimbal.track_custom_exit";
+    private static final String TRACK_REGION_EVENT_PREFERENCE_KEY = "com.urbanairship.gimbal.track_custom_exit";
     private static final String STARTED_REFERENCE = "com.urbanairship.gimbal.is_started";
 
     private static final String TAG = "GimbalAdapter";
@@ -52,6 +57,10 @@ public class GimbalAdapter {
 
     // Gimbal to UA Device Attributes
     private static final String UA_GIMBAL_APPLICATION_INSTANCE_ID = "com.urbanairship.gimbal.aii";
+
+    // CustomEvent names
+    private static final String CUSTOM_ENTRY_EVENT_NAME = "gimbal_custom_entry_event";
+    private static final String CUSTOM_EXIT_EVENT_NAME = "gimbal_custom_exit_event";
 
     private final SharedPreferences preferences;
     private static GimbalAdapter instance;
@@ -94,11 +103,27 @@ public class GimbalAdapter {
          * @param visit The Gimbal visit.
          */
         void onRegionExited(@NonNull RegionEvent event, @NonNull Visit visit);
+
+        /**
+         * Called when a Urban Airship CustomEvent entry is created from a Gimbal Visit.
+         *
+         * @param event The Urban Airship event.
+         * @param visit The Gimbal visit.
+         */
+        void onCustomRegionEntry(@NonNull CustomEvent event, @NonNull Visit visit);
+
+        /**
+         * Called when a Urban Airship CustomEvent exit is created from a Gimbal Visit.
+         *
+         * @param event The Urban Airship event.
+         * @param visit The Gimbal visit.
+         */
+        void onCustomRegionExit(@NonNull CustomEvent event, @NonNull Visit visit);
     }
 
     /**
      * Listener for Gimbal place events. Creates an analytics event
-     * corresponding to boundary event type.
+     * corresponding to boundary event type, and Event type preference.
      */
     private PlaceEventListener placeEventListener = new PlaceEventListener() {
         @Override
@@ -109,16 +134,24 @@ public class GimbalAdapter {
             UAirship.shared(new UAirship.OnReadyCallback() {
                 @Override
                 public void onAirshipReady(@NonNull UAirship airship) {
-                    RegionEvent enter = RegionEvent.newBuilder()
-                            .setBoundaryEvent(RegionEvent.BOUNDARY_EVENT_ENTER)
-                            .setSource(SOURCE)
-                            .setRegionId(visit.getPlace().getIdentifier())
-                            .build();
+                    if (preferences.getBoolean(TRACK_REGION_EVENT_PREFERENCE_KEY, false)) {
+                        RegionEvent event = createRegionEvent(visit, RegionEvent.BOUNDARY_EVENT_ENTER);
 
-                    airship.getAnalytics().addEvent(enter);
+                        airship.getAnalytics().addEvent(event);
 
-                    for (Listener listener : listeners) {
-                        listener.onRegionEntered(enter, visit);
+                        for (Listener listener : listeners) {
+                            listener.onRegionEntered(event, visit);
+                        }
+                    }
+
+                    if (preferences.getBoolean(TRACK_CUSTOM_ENTRY_PREFERENCE_KEY, false)) {
+                        CustomEvent event = createCustomEvent(CUSTOM_ENTRY_EVENT_NAME, visit, RegionEvent.BOUNDARY_EVENT_ENTER);
+
+                        airship.getAnalytics().addEvent(event);
+
+                        for (Listener listener : listeners) {
+                            listener.onCustomRegionEntry(event, visit);
+                        }
                     }
                 }
             });
@@ -134,19 +167,61 @@ public class GimbalAdapter {
                 @Override
                 public void onAirshipReady(@NonNull UAirship airship) {
 
-                    RegionEvent exit = RegionEvent.newBuilder()
-                            .setBoundaryEvent(RegionEvent.BOUNDARY_EVENT_EXIT)
-                            .setSource(SOURCE)
-                            .setRegionId(visit.getPlace().getIdentifier())
-                            .build();
+                    if (preferences.getBoolean(TRACK_REGION_EVENT_PREFERENCE_KEY, false)) {
+                        RegionEvent event = createRegionEvent(visit, RegionEvent.BOUNDARY_EVENT_EXIT);
 
-                    airship.getAnalytics().addEvent(exit);
+                        airship.getAnalytics().addEvent(event);
 
-                    for (Listener listener : new ArrayList<>(listeners)) {
-                        listener.onRegionExited(exit, visit);
+                        for (Listener listener : listeners) {
+                            listener.onRegionExited(event, visit);
+                        }
+                    }
+
+                    if (preferences.getBoolean(TRACK_CUSTOM_EXIT_PREFERENCE_KEY, false)) {
+                        CustomEvent event = createCustomEvent(CUSTOM_EXIT_EVENT_NAME, visit, RegionEvent.BOUNDARY_EVENT_EXIT);
+
+                        airship.getAnalytics().addEvent(event);
+
+                        for (Listener listener : listeners) {
+                            listener.onCustomRegionExit(event, visit);
+                        }
                     }
                 }
             });
+        }
+
+        private RegionEvent createRegionEvent(Visit visit, int boundaryEvent) {
+            return RegionEvent.newBuilder()
+                    .setBoundaryEvent(boundaryEvent)
+                    .setSource(SOURCE)
+                    .setRegionId(visit.getPlace().getIdentifier())
+                    .build();
+        }
+
+        private CustomEvent createCustomEvent(final String eventName, final Visit visit, final int boundaryEvent) {
+            if (boundaryEvent == RegionEvent.BOUNDARY_EVENT_ENTER) {
+                return createCustomEventBuilder(eventName, visit, boundaryEvent).build();
+            } else {
+                return createCustomEventBuilder(eventName, visit, boundaryEvent)
+                        .addProperty("dwellTimeInSeconds", visit.getDwellTimeInMillis() * 1000)
+                        .build();
+            }
+        }
+
+        private CustomEvent.Builder createCustomEventBuilder(String eventName, Visit visit, final int boundaryEvent) {
+            HashMap<String, String> placeAttributesCopy = new HashMap<>();
+            Attributes placeAttributes = visit.getPlace().getAttributes();
+            for (String key : placeAttributes.getAllKeys()) {
+                placeAttributesCopy.put(key, placeAttributes.getValue(key));
+            }
+
+            return CustomEvent.newBuilder(eventName)
+                    .addProperty("placeAttributes", JsonValue.wrapOpt(placeAttributesCopy))
+                    .addProperty("visitID", visit.getVisitID())
+                    .addProperty("placeIdentifier", visit.getPlace().getIdentifier())
+                    .addProperty("placeName", visit.getPlace().getName())
+                    .addProperty("source", SOURCE)
+                    .addProperty("boundaryEvent", boundaryEvent);
         }
     };
 
@@ -357,6 +432,27 @@ public class GimbalAdapter {
         if (isStarted()) {
             updateDeviceAttributes();
         }
+    }
+
+    /**
+     * Set whether the adapter should create a CustomEvent upon Gimbal Place entry.
+     * */
+    public void setShouldTrackCustomEntryEvent(Boolean shouldTrackCustomEntryEvent) {
+        preferences.edit().putBoolean(TRACK_CUSTOM_ENTRY_PREFERENCE_KEY, shouldTrackCustomEntryEvent);
+    }
+
+    /**
+     * Set whether the adapter should create a CustomEvent upon Gimbal Place exit.
+     * */
+    public void setShouldTrackCustomExitEvent(Boolean shouldTrackCustomExitEvent) {
+        preferences.edit().putBoolean(TRACK_CUSTOM_EXIT_PREFERENCE_KEY, shouldTrackCustomExitEvent);
+    }
+
+    /**
+     * Set whether the adapter should create a CustomEvent upon Gimbal Place exit.
+     * */
+    public void setShouldTrackRegionEvent(Boolean shouldTrackRegionEvent) {
+        preferences.edit().putBoolean(TRACK_REGION_EVENT_PREFERENCE_KEY, shouldTrackRegionEvent);
     }
 
     /**
