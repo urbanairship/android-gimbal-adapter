@@ -14,15 +14,20 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
     compileOnly "com.gimbal.android.v4:gimbal-sdk:4.7.0"
     compileOnly "com.gimbal.android.v4:gimbal-slf4j-impl:4.7.0"
-    api "com.urbanairship.android:urbanairship-core:13.1.0"
+    api "com.urbanairship.android:urbanairship-core:16.5.0"
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets["main"].java.srcDirs
 }
 
 // Create the pom configuration:
@@ -53,31 +58,29 @@ def pomConfig = {
 publishing {
     publications {
         Production(MavenPublication) {
-// TODO: do we need to document anything in these commented sections?
-//            artifact("$buildDir/outputs/aar/" + project.name + "-release.aar")
-            afterEvaluate {
-                from components.release
-//                artifact bundleReleaseAar
-            }
             groupId project.group
             artifactId project.name
+            version project.version
 
-//            pom.withXml {
-//                def root = asNode()
-//
-//                def dependenciesNode = root.appendNode('dependencies')
-//                configurations.implementation.allDependencies.each {
-//                    def dependencyNode = dependenciesNode.appendNode('dependency')
-//                    dependencyNode.appendNode('groupId', it.group)
-//                    dependencyNode.appendNode('artifactId', it.name)
-//                    dependencyNode.appendNode('version', it.version)
-//                }
-//
-//                root.appendNode('description', project.description)
-//                root.appendNode('name', project.name)
-//                root.appendNode('url', 'https://docs.gimbal.com')
-//                root.children().last() + pomConfig
-//            }
+            artifact("$buildDir/outputs/aar/" + project.name + "-release.aar")
+            artifact(sourcesJar)
+
+            pom.withXml {
+                def root = asNode()
+
+                def dependenciesNode = root.appendNode('dependencies')
+                configurations.implementation.allDependencies.each {
+                    def dependencyNode = dependenciesNode.appendNode('dependency')
+                    dependencyNode.appendNode('groupId', it.group)
+                    dependencyNode.appendNode('artifactId', it.name)
+                    dependencyNode.appendNode('version', it.version)
+                }
+
+                root.appendNode('description', project.description)
+                root.appendNode('name', project.name)
+                root.appendNode('url', 'https://docs.gimbal.com')
+                root.children().last() + pomConfig
+            }
         }
     }
 }

@@ -211,8 +211,11 @@ public class GimbalAdapter {
         private CustomEvent.Builder createCustomEventBuilder(String eventName, Visit visit, final int boundaryEvent) {
             HashMap<String, String> placeAttributesCopy = new HashMap<>();
             Attributes placeAttributes = visit.getPlace().getAttributes();
-            for (String key : placeAttributes.getAllKeys()) {
-                placeAttributesCopy.put(key, placeAttributes.getValue(key));
+
+            if (placeAttributes != null) {
+                for (String key : placeAttributes.getAllKeys()) {
+                    placeAttributesCopy.put(key, placeAttributes.getValue(key));
+                }
             }
 
             return CustomEvent.newBuilder(eventName)
@@ -438,21 +441,21 @@ public class GimbalAdapter {
      * Set whether the adapter should create a CustomEvent upon Gimbal Place entry.
      * */
     public void setShouldTrackCustomEntryEvent(Boolean shouldTrackCustomEntryEvent) {
-        preferences.edit().putBoolean(TRACK_CUSTOM_ENTRY_PREFERENCE_KEY, shouldTrackCustomEntryEvent);
+        preferences.edit().putBoolean(TRACK_CUSTOM_ENTRY_PREFERENCE_KEY, shouldTrackCustomEntryEvent).apply();
     }
 
     /**
      * Set whether the adapter should create a CustomEvent upon Gimbal Place exit.
      * */
     public void setShouldTrackCustomExitEvent(Boolean shouldTrackCustomExitEvent) {
-        preferences.edit().putBoolean(TRACK_CUSTOM_EXIT_PREFERENCE_KEY, shouldTrackCustomExitEvent);
+        preferences.edit().putBoolean(TRACK_CUSTOM_EXIT_PREFERENCE_KEY, shouldTrackCustomExitEvent).apply();
     }
 
     /**
      * Set whether the adapter should create a CustomEvent upon Gimbal Place exit.
      * */
     public void setShouldTrackRegionEvent(Boolean shouldTrackRegionEvent) {
-        preferences.edit().putBoolean(TRACK_REGION_EVENT_PREFERENCE_KEY, shouldTrackRegionEvent);
+        preferences.edit().putBoolean(TRACK_REGION_EVENT_PREFERENCE_KEY, shouldTrackRegionEvent).apply();
     }
 
     /**
