@@ -21,15 +21,17 @@ public class AirshipReadyReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         GimbalAdapter.shared(context).restore();
 
-        UAirship.shared().getChannel().addChannelListener(new AirshipChannelListener() {
-            @Override
-            public void onChannelCreated(@NonNull String channelId) {
-                GimbalAdapter.shared(context).onAirshipChannelCreated();
-            }
+        if (UAirship.isFlying() || UAirship.isTakingOff()) {
+            UAirship.shared().getChannel().addChannelListener(new AirshipChannelListener() {
+                @Override
+                public void onChannelCreated(@NonNull String channelId) {
+                    GimbalAdapter.shared(context).onAirshipChannelCreated();
+                }
 
-            @Override
-            public void onChannelUpdated(@NonNull String channelId) {
-            }
-        });
+                @Override
+                public void onChannelUpdated(@NonNull String channelId) {
+                }
+            });
+        }
     }
 }
