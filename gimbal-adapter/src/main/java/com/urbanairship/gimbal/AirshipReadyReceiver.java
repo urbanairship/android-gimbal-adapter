@@ -19,9 +19,9 @@ public class AirshipReadyReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-        GimbalAdapter.shared(context).restore();
-
         if (UAirship.isFlying() || UAirship.isTakingOff()) {
+            GimbalAdapter.shared(context).restore();
+
             UAirship.shared().getChannel().addChannelListener(new AirshipChannelListener() {
                 @Override
                 public void onChannelCreated(@NonNull String channelId) {
